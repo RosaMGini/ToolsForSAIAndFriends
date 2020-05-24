@@ -12,4 +12,9 @@ This module contains some tools that facilitate using the [JSON-based analysis e
   * a Python list of lists 
   * a Python list of strings
   * a string
-* a class **interfaceKataGoAnalysisEngine** that allows openng a session of the engine; a method then allows requesting queries indicating and sgf file, a tunr to be analysed, the rules and the point of view; the method returns a Python dictionary with the same format as the JSON output of the engine 
+* a class **interfaceKataGoAnalysisEngine** that allows opening a session of the engine; a method then allows requesting queries indicating   * a sgf file, 
+  * a turn to be analysed, 
+  * the rules, 
+  * the komi, and 
+  * the point of view; 
+ the method returns a Python dictionary with the same format as the JSON output of the engine 
