@@ -8,11 +8,13 @@ This contains the class GoGameAI which manages games between any pair of nets am
 # toolsKataGoAnalysisEngine
 
 This module contains some tools that facilitate using the [JSON-based analysis engine](https://github.com/lightvector/KataGo/blob/master/docs/Analysis_Engine.md) of KataGo: 
+
 * three functions that export an sgf file to 
   * a Python list of lists 
   * a Python list of strings
   * a string
-* a class **interfaceKataGoAnalysisEngine** that allows opening a session of the engine; a method then allows requesting queries indicating   * a sgf file, 
+* a class **interfaceKataGoAnalysisEngine** that allows opening a session of the engine; a method then allows requesting queries indicating   
+* a sgf file, 
   * a turn to be analysed, 
   * the rules, 
   * the komi, and 
