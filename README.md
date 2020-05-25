@@ -19,6 +19,7 @@ This module contains some tools that facilitate using the [JSON-based analysis e
   * the rules, 
   * the komi, and 
   * the point of view; 
- the method returns a Python dictionary with the same format as the JSON output of the engine.
+
+the method returns a Python dictionary with the same format as the JSON output of the engine.
  
  The module comes with a script **test_toolsKataGoAnalysisEngine.py** containing an example of use.
