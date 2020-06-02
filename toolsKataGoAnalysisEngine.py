@@ -1,3 +1,6 @@
+# version 1.1
+#
+
 import os
 import subprocess
 from sgfmill import sgf_grammar
@@ -56,7 +59,8 @@ class interfaceKataGoAnalysisEngine:
 
     Authors: Rosa Gini, Maurizio Parton
     Date: 24 May 2020
-    Version: 1.0
+    Version: 1.1
+    changelog: added method analyse_list_of_moves
     
     Args: 
         KGengine: the string that launches the local KataGo engine
@@ -79,10 +83,39 @@ class interfaceKataGoAnalysisEngine:
     def __str__(self):
         return "KataGo Analysis Engine using net " + model + "with config file " + configFile + " and parameters " + other +'\n'
 
-    # method running analysing a sgf and capturing the output
+    # method invoking KataGo with a json line and returning the result as a dictionary
+    def launchQueryAndReturn(self,line):
+        """
+        launchQueryAndReturn is a method launching a query in KataGo's analysis engine and returning the result as a dictionary; only works if the line is correctly formatted, but does not check for this; the dictionary contains the result of the analysis of the first turn only
+
+        Args: 
+            line (str): a JSON line formatted for KataGo's analysis engine: format is documented in the engine documentation https://github.com/lightvector/KataGo/blob/v1.4.0/docs/Analysis_Engine.md
+
+        Returns:
+            the Python dictionary of the JSON response from KataGo's analysis engine: format is documented in the engine documentation https://github.com/lightvector/KataGo/blob/v1.4.0/docs/Analysis_Engine.md
+
+        Throws:
+            nothing
+            
+        """
+        line=line+'\n'
+        # print('launching the following query',line,'\n\n' )
+        self.KGProcess.stdin.write(line)
+        self.KGProcess.stdin.flush()
+        while True:
+            print('...analysing query, please wait...')
+            analysis=self.KGProcess.stdout.readline()#[0:-1]
+            if len(analysis)>1:
+                break
+        analysisJSON= analysis
+        analysisPYTHON=json.loads(analysisJSON)
+        print('the analysis is completed\n\n')
+        return(analysisPYTHON)
+    
+    # method analysing a sgf file and capturing the output
     def analyse_sgf(self,sgf_file,turnToBeAnalysed,id,komi,rules,COLOR):
         """
-        analyse_sgf is a method analysing the turn -turnToBeAnalysed- of the moves contained in the sgf file -sgf_file-. The moves are considered to be part of a game played with komi -komi- and rules -rules-. The analysis is conducetd from the point of view of -COLOR-
+        analyse_sgf is a method analysing the turn -turnToBeAnalysed- of the moves contained in the sgf file -sgf_file-. The moves are considered to be part of a game played with komi -komi- and rules -rules-. The analysis is conducted from the point of view of -COLOR-
 
         Args: 
             sgf_file (str): name of the sgf file
@@ -111,18 +144,49 @@ class interfaceKataGoAnalysisEngine:
         lineDic['boardYSize'] = board_size
         lineDic['analyzeTurns'] = [turnToBeAnalysed]
         lineDic['overrideSettings'] = overrideDic
-        line = json.JSONEncoder().encode(lineDic)+'\n'
-        print('launching the following query with identifier',id,'\n',line )
-        self.KGProcess.stdin.write(line)
-        self.KGProcess.stdin.flush()
-        while True:
-            print('...analysing query ' +id+', please wait...')
-            analysis=self.KGProcess.stdout.readline()#[0:-1]
-            if len(analysis)>1:
-                break
-        analysisJSON= analysis
-        print(analysisJSON)
-        analysisPYTHON=json.loads(analysisJSON)
-        print('the analysis',analysisPYTHON['id'],'is completed for turn',analysisPYTHON['turnNumber'],'from sgf file',sgf_file, 'with komi',str(komi), 'and rules', rules)
+        line = json.JSONEncoder().encode(lineDic) #+'\n'
+        # print('launching the following query with identifier',id,'\n',line,'\n\n' )
+        analysisPYTHON=self.launchQueryAndReturn(line)
+        print('the analysis',analysisPYTHON['id'],'is completed for turn',analysisPYTHON['turnNumber'],'from sgf file',sgf_file, 'with komi',str(komi), 'and rules', rules,'\n')
         return(analysisPYTHON)
+
+    # method analysing a sgf file and capturing the output
+    def analyse_listOfLists(self,list_of_lists,turnToBeAnalysed,id,komi,rules,COLOR,board_size=19):
+        """
+        analyse_listOfLists is a method analysing the turn -turnToBeAnalysed- of the moves contained in the list of lists -list_of_lists-. The moves are considered to be part of a game played with komi -komi- and rules -rules-. The analysis is conducted from the point of view of -COLOR-
+
+        Args: 
+            list_of_lists (list): list of lists of moves ["W","P6"]
+            turnToBeAnalysed (int): turn to be analysed
+            id (str): identifier of the query
+            komi (float): komi for the game
+            rules (string or JSON): specify the rules for the game using either a shorthand string or a full JSON object
+            COLOR (str): the color whose point of view is chosen for the analysis ('BLACK'|'WHITE')
+
+        Returns:
+            the Python dictionary of the JSON response from KataGo's analysis engine: format is documented in the engine documentation https://github.com/lightvector/KataGo/blob/v1.4.0/docs/Analysis_Engine.md
+
+        Throws:
+            nothing
+            
+        """
+        board_size = board_size
+        overrideDic = {}
+        overrideDic["reportAnalysisWinratesAs"] = COLOR 
+        lineDic = {}
+        lineDic['id'] = id
+        lineDic['moves'] = list_of_lists
+        lineDic['rules'] = rules
+        lineDic['komi'] = komi
+        lineDic['boardXSize'] = board_size
+        lineDic['boardYSize'] = board_size
+        lineDic['analyzeTurns'] = [turnToBeAnalysed]
+        lineDic['overrideSettings'] = overrideDic
+        line = json.JSONEncoder().encode(lineDic) #+'\n'
+        # print('launching the following query with identifier',id,'\n',line,'\n\n' )
+        analysisPYTHON=self.launchQueryAndReturn(line)
+        print('the analysis',analysisPYTHON['id'],'is completed for turn',analysisPYTHON['turnNumber'],'with komi',str(komi), 'and rules', rules,'\n')
+        return(analysisPYTHON)
+
+
 
