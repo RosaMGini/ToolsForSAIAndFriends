@@ -1,3 +1,5 @@
+# this files defines two classes: GoAITools and GoGameAI. an example of use is in testGoGamesAI
+
 import os
 from os import  O_NONBLOCK 
 import subprocess
