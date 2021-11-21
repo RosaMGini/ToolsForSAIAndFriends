@@ -3,7 +3,9 @@ This repository contains mainly Python tools to be used to run experiments on [S
 
 # GoGameAI
 
-This contains the class GoGameAI which manages games between any pair of nets among SAI, Leela Zero and KataGo
+This contains the class **GoGameAI** which manages games between any pair of nets among SAI, Leela Zero and KataGo. The auxiliaty class **GoGameTools** is also implemented. 
+
+The module comes with a script **toolGoAITools** containing examples of usage.
 
 # toolsKataGoAnalysisEngine
 
